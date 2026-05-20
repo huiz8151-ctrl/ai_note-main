@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Memory</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-top">
+          <div class="brand">
+            <h1>Memory</h1>
+            <p>本地优先智能</p>
+          </div>
+
+          <nav class="sidebar-nav">
+            <button class="nav-button active" data-page="dashboard">
+              <span class="nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                  <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                  <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+                  <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+                </svg>
+              </span>
+              <span>首页</span>
+            </button>
+
+            <button class="nav-button" data-page="recording">
+              <span class="nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3Z"></path>
+                  <path d="M19 11a7 7 0 0 1-14 0"></path>
+                  <path d="M12 18v3"></path>
+                  <path d="M8 21h8"></path>
+                </svg>
+              </span>
+              <span>实时记录</span>
+            </button>
+
+            <button class="nav-button" data-page="library">
+              <span class="nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 4h12a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2V4Z"></path>
+                  <path d="M7 4v14"></path>
+                  <path d="M10 8h6"></path>
+                </svg>
+              </span>
+              <span>会议详情</span>
+            </button>
+
+            <button class="nav-button" data-page="knowledge">
+              <span class="nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 4h10a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2V4Z"></path>
+                  <path d="M7 8h8"></path>
+                  <path d="M7 12h6"></path>
+                  <path d="M7 16h7"></path>
+                  <path d="M18.5 9.5 21 12l-2.5 2.5"></path>
+                </svg>
+              </span>
+              <span>知识转录</span>
+            </button>
+
+          </nav>
+        </div>
+
+        <div class="sidebar-bottom">
+          <div class="sidebar-mini-links">
+            <button class="mini-link">
+              <span class="nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round">
+                  <ellipse cx="12" cy="5" rx="7" ry="3"></ellipse>
+                  <path d="M5 5v14c0 1.7 3.1 3 7 3s7-1.3 7-3V5"></path>
+                </svg>
+              </span>
+              <span>本地存储</span>
+            </button>
+
+            <button class="mini-link">
+              <span class="nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="9"></circle>
+                  <path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"></path>
+                  <path d="M12 17h.01"></path>
+                </svg>
+              </span>
+              <span>帮助</span>
+            </button>
+          </div>
+
+          <div class="plan-card">
+            <div class="avatar-badge">A</div>
+            <div>
+              <strong>专业版</strong>
+              <p>本地同步已启用</p>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-shell">
+        <header class="topbar">
+          <div class="topbar-left">
+            <div id="page-breadcrumb" class="breadcrumb">工作区 / 首页</div>
+          </div>
+
+          <div class="topbar-right">
+            <label class="search-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"></circle>
+                <path d="m20 20-3.5-3.5"></path>
+              </svg>
+              <input id="global-search" type="text" placeholder="搜索会议..." />
+            </label>
+
+            <div class="window-actions" aria-hidden="true">
+              <span class="window-min"></span>
+              <span class="window-square"></span>
+              <span class="window-close"></span>
+            </div>
+          </div>
+        </header>
+
+        <section class="content-stage">
+          <section class="page-panel active" data-page-panel="dashboard">
+            <div class="dashboard-grid">
+              <section class="hero-card app-card">
+                <div class="hero-copy">
+                  <span class="eyebrow">工作区 / 首页</span>
+                  <h2>记下此刻</h2>
+                  <p>开始实时录制，或上传音视频生成转写与摘要。</p>
+                </div>
+                <div class="hero-side">
+                  <div class="hero-actions">
+                    <button id="dashboard-start-btn" class="primary-action">
+                      <span class="button-icon">✦</span>
+                      <span>开始录制</span>
+                    </button>
+                    <button id="dashboard-open-library-btn" class="ghost-action">上传文件</button>
+                  </div>
+                  <div class="hero-watermark" aria-hidden="true">
+                    <svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <path d="M60 16v64"></path>
+                      <path d="M38 38a22 22 0 0 1 44 0v20a22 22 0 0 1-44 0Z"></path>
+                      <path d="M26 54c0 19 15 34 34 34s34-15 34-34"></path>
+                    </svg>
+                  </div>
+                </div>
+              </section>
+
+              <section class="notebook-card app-card">
+                <div class="card-head">
+                  <div>
+                    <h3>概览</h3>
+                    <p>把最重要的 3 个结果放在首页。</p>
+                  </div>
+                </div>
+
+                <div id="dashboard-notebook-list" class="notebook-list">
+                  <article class="note-row">
+                    <div class="note-badge">01</div>
+                    <div class="note-copy">
+                      <strong>开始前先确认标题</strong>
+                      <p>建议先把会议标题、模板和语言确认好，再开始录制。</p>
+                    </div>
+                  </article>
+                  <article class="note-row">
+                    <div class="note-badge">02</div>
+                    <div class="note-copy">
+                      <strong>录制后及时整理摘要</strong>
+                      <p>完成转写后，优先进入会议详情页生成摘要，后续查找会更方便。</p>
+                    </div>
+                  </article>
+                  <article class="note-row">
+                    <div class="note-badge">03</div>
+                    <div class="note-copy">
+                      <strong>知识文档需要手动生成</strong>
+                      <p>如需知识总结，请在知识转录页点击“生成总结文档”再开始生成。</p>
+                    </div>
+                  </article>
+                </div>
+              </section>
+
+              <section class="records-card app-card">
+                <div class="section-head">
+                  <div>
+                    <h3>最近记录</h3>
+                    <p>最近的转写和摘要。</p>
+                  </div>
+                  <button id="view-library-btn" class="link-action">查看全部</button>
+                </div>
+
+                <div class="records-table-head">
+                  <span>标题</span>
+                  <span>日期</span>
+                  <span>时长</span>
+                  <span>状态</span>
+                  <span>操作</span>
+                </div>
+                <div id="dashboard-records" class="records-table-body scrollless"></div>
+              </section>
+
+              <section class="insight-card app-card">
+                <div class="insight-icon" aria-hidden="true"></div>
+                <div class="insight-copy">
+                  <h3>周报洞察</h3>
+                  <p id="dashboard-weekly-insight">
+                    完成几个录制会话后，您最近的录制活动摘要将显示在这里。
+                  </p>
+                </div>
+                <button class="ghost-action compact-action">分析趋势</button>
+                <button class="floating-plus" type="button" aria-label="创建新工作区快捷方式">+</button>
+              </section>
+
+              <section class="chatbot-card app-card">
+                <div class="section-head chatbot-head">
+                  <div class="chatbot-head-row">
+                    <div class="chatbot-head-main">
+                      <h3>Memory AI</h3>
+                      <span id="dashboard-chatbot-status" class="tiny-chip neutral">未检测</span>
+                    </div>
+                    <button
+                      id="dashboard-chatbot-new-btn"
+                      class="ghost-action compact-action chatbot-new-action"
+                      type="button"
+                    >
+                      新对话
+                    </button>
+                  </div>
+                  <p id="dashboard-chatbot-service-meta" class="chatbot-service-meta-text">等待检测服务状态</p>
+                </div>
+
+                <div class="chatbot-layout">
+                  <div class="chatbot-session-strip">
+                    <div class="chatbot-session-toolbar">
+                      <span>最近对话</span>
+                      <button id="dashboard-chatbot-delete-btn" class="link-action chatbot-delete-action" type="button">
+                        删除当前
+                      </button>
+                    </div>
+                    <div id="dashboard-chatbot-sessions" class="chatbot-session-list scrollless"></div>
+                  </div>
+
+                  <div class="chatbot-main">
+                    <div id="dashboard-chatbot-messages" class="chatbot-message-list scrollless"></div>
+
+                    <form id="dashboard-chatbot-form" class="chatbot-composer">
+                      <textarea
+                        id="dashboard-chatbot-draft"
+                        rows="2"
+                        placeholder="输入问题，开始对话"
+                      ></textarea>
+                      <div class="chatbot-composer-actions">
+                        <span id="dashboard-chatbot-error" class="chatbot-error-text"></span>
+                        <button id="dashboard-chatbot-send-btn" class="primary-action compact-action" type="submit">
+                          发送
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <section class="page-panel" data-page-panel="recording">
+            <div id="recording-page" class="recording-page">
+              <div id="recording-header" class="recording-header app-card slim-card">
+                <div class="recording-title-group">
+                  <span class="live-dot"></span>
+                  <div class="recording-header-main">
+                    <input
+                      id="recording-title"
+                      class="recording-title-input"
+                      type="text"
+                      value="未命名录制 1"
+                      placeholder="未命名录制 1"
+                      aria-label="录制标题"
+                    />
+                    <p id="recording-subtitle">本地捕获流待命中。</p>
+                    <div class="recording-settings-row">
+                      <label class="recording-template-field" for="recording-template-select">
+                        <span>录制类别</span>
+                        <select id="recording-template-select">
+                          <option value="meeting">会议纪要</option>
+                          <option value="learning">课程笔记</option>
+                          <option value="interview">采访总结</option>
+                          <option value="sales">销售发现</option>
+                          <option value="custom">自定义模板</option>
+                        </select>
+                      </label>
+                      <label class="recording-template-field recording-model-field" for="recording-whisper-model-select">
+                        <span>Whisper 模型</span>
+                        <select id="recording-whisper-model-select">
+                          <option value="tiny">tiny</option>
+                          <option value="base">base</option>
+                          <option value="small">small</option>
+                          <option value="medium">medium</option>
+                          <option value="large-v3">large-v3 (online preferred)</option>
+                          <option value="turbo">turbo</option>
+                        </select>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="recording-header-side">
+                  <div class="recording-timer">
+                    <strong id="recording-duration">00:00</strong>
+                    <span>录制时间</span>
+                  </div>
+
+                  <div class="recording-header-actions">
+                    <button id="recording-delete-btn" class="recording-delete-btn" type="button" hidden>
+                      删除当前条
+                    </button>
+                    <button
+                      id="recording-collapse-toggle"
+                      class="recording-collapse-toggle"
+                      type="button"
+                      aria-expanded="true"
+                      aria-controls="recording-transcript"
+                    >
+                      <span id="recording-collapse-label">收起转录</span>
+                      <span class="recording-collapse-icon"></span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <button id="recording-secondary-action" class="secure-chip secondary-chip" type="button">
+                <span class="secure-dot"></span>
+                <span id="recording-secondary-action-label">点击此处增加新的录制文件</span>
+              </button>
+
+              <div id="recording-module-stack" class="recording-module-stack" hidden></div>
+
+              <div id="recording-transcript" class="recording-stream"></div>
+
+              <div class="recording-footer app-card slim-card">
+                <div class="wave-cluster">
+                  <div id="wave-bars" class="wave-bars" aria-hidden="true"></div>
+                </div>
+
+                <div class="recording-controls">
+                  <button id="recording-start-btn" class="footer-button primary-live">开始录制</button>
+                  <button id="pause-btn" class="footer-button">暂停</button>
+                  <button id="resume-btn" class="footer-button primary-outline">继续</button>
+                  <button id="mark-highlight-btn" class="footer-button accent">标记重点</button>
+                  <button id="stop-btn" class="footer-button danger">停止录制</button>
+                </div>
+
+                <div class="gain-box">
+                  <span>输入增益</span>
+                  <div class="gain-dots">
+                    <i id="gain-dot-1"></i>
+                    <i id="gain-dot-2"></i>
+                    <i id="gain-dot-3"></i>
+                    <i id="gain-dot-4"></i>
+                    <i id="gain-dot-5"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="page-panel" data-page-panel="library">
+            <div class="detail-page">
+              <section class="detail-shell app-card">
+                <div class="detail-overview-bar">
+                  <div class="detail-overview-left">
+                    <button class="detail-back" type="button" aria-label="返回库">←</button>
+                    <div>
+                      <h2 id="detail-title">选择一条记录</h2>
+                      <p id="detail-meta">打开最近的会议来检查转写和 AI 会议摘要。</p>
+                    </div>
+                  </div>
+
+                  <div class="detail-overview-right">
+                    <span class="detail-lock-chip">已本地加密</span>
+                    <button id="detail-copy-btn" class="ghost-action compact-action">复制摘要</button>
+                    <button id="detail-export-btn" class="primary-action secondary compact-action">导出 MD</button>
+                  </div>
+                </div>
+
+                <div class="detail-toolbar">
+                  <div class="detail-actions">
+                    <label class="detail-template-field">
+                      <span>模板</span>
+                      <select id="detail-template-select">
+                        <option value="meeting">会议纪要</option>
+                        <option value="learning">课程笔记</option>
+                        <option value="interview">采访总结</option>
+                        <option value="sales">销售发现</option>
+                        <option value="custom">自定义模板</option>
+                      </select>
+                    </label>
+                    <button id="detail-generate-btn" class="ghost-action compact-action">生成摘要</button>
+                    <button id="detail-save-btn" class="ghost-action compact-action">保存转写</button>
+                  </div>
+                </div>
+
+                <div class="detail-columns">
+                  <section class="detail-pane transcript-pane">
+                    <details id="detail-record-picker" class="detail-record-picker">
+                      <summary class="detail-record-picker-toggle">
+                        <div class="detail-record-picker-copy">
+                          <span class="detail-record-picker-label">会议记录</span>
+                          <strong id="detail-record-current">选择会议记录</strong>
+                          <p id="detail-record-current-meta">展开后切换当前会议记录</p>
+                        </div>
+                        <span class="detail-record-picker-chevron" aria-hidden="true"></span>
+                      </summary>
+                      <div class="detail-record-picker-panel">
+                        <div id="library-record-list" class="library-record-list scrollless"></div>
+                      </div>
+                    </details>
+                    <div class="pane-head">
+                      <div>
+                        <h3>原始转写</h3>
+                      </div>
+                      <div class="transcript-head-chips">
+                        <span id="detail-duration-chip" class="tiny-chip neutral">0m 00s</span>
+                        <span id="detail-language-chip" class="tiny-chip">自动检测</span>
+                      </div>
+                    </div>
+                    <div id="detail-transcript-stream" class="detail-transcript-stream scrollless"></div>
+                  </section>
+
+                  <section class="detail-pane summary-pane">
+                    <div class="pane-head">
+                      <div>
+                        <h3>AI 会议摘要</h3>
+                      </div>
+                      <span id="detail-status-chip" class="tiny-chip neutral">暂无摘要</span>
+                    </div>
+                    <div id="detail-ai-output" class="detail-ai-output scrollless"></div>
+                  </section>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <section class="page-panel" data-page-panel="knowledge">
+            <div class="knowledge-page">
+              <section id="knowledge-topbar" class="knowledge-topbar app-card" role="button" tabindex="0" aria-label="上传视频">
+                <div class="knowledge-video-main">
+                  <span class="knowledge-video-icon" aria-hidden="true">▶</span>
+                  <div>
+                    <h2 id="knowledge-video-title">视频</h2>
+                    <p id="knowledge-video-meta">导入视频后开始转写</p>
+                  </div>
+                </div>
+
+                <div class="knowledge-top-actions">
+                  <label class="knowledge-inline-field">
+                    <span>转录引擎</span>
+                    <select data-config-key="video2docWhisperModel">
+                      <option value="openai/whisper-large-v3">OpenRouter · whisper-large-v3（默认）</option>
+                      <option value="tiny">本地 Whisper · tiny</option>
+                      <option value="base">本地 Whisper · base</option>
+                      <option value="small">本地 Whisper · small</option>
+                      <option value="medium">本地 Whisper · medium</option>
+                      <option value="large-v2">本地 Whisper · large-v2</option>
+                      <option value="turbo">本地 Whisper · turbo</option>
+                    </select>
+                  </label>
+
+                  <label class="knowledge-inline-field">
+                    <span>语言</span>
+                    <select data-config-key="video2docLanguage">
+                      <option value="auto">自动检测</option>
+                      <option value="zh">中文</option>
+                      <option value="en">英文</option>
+                      <option value="ja">日文</option>
+                      <option value="ko">韩文</option>
+                    </select>
+                  </label>
+
+                  <span id="knowledge-status" class="tiny-chip">等待导入</span>
+                  <button id="knowledge-start-btn" class="ghost-action compact-action">导入视频</button>
+                  <button id="knowledge-archive-btn" class="knowledge-sync-btn">开始转写</button>
+                </div>
+              </section>
+
+              <section class="knowledge-workspace-grid">
+                <section class="knowledge-transcript-card app-card">
+                  <div class="knowledge-pane-head">
+                    <h3>原始转写</h3>
+                    <button id="knowledge-export-markdown-btn" class="knowledge-export-btn" type="button">
+                      导出 Markdown
+                    </button>
+                  </div>
+                  <div id="knowledge-transcript-preview" class="knowledge-preview scrollless"></div>
+                </section>
+
+                <section class="knowledge-doc-card app-card">
+                  <div class="knowledge-doc-head">
+                    <h3>AI 知识文档</h3>
+                    <div class="knowledge-doc-actions">
+                      <button id="knowledge-generate-doc-btn" class="knowledge-doc-generate-btn" type="button">
+                        生成总结文档
+                      </button>
+                    </div>
+                  </div>
+                  <div id="knowledge-doc-preview" class="knowledge-preview scrollless"></div>
+                </section>
+              </section>
+
+              <div class="knowledge-hidden-controls" aria-hidden="true">
+                <input id="knowledge-video-input" type="file" accept="video/*" />
+                <select id="knowledge-template-select">
+                  <option value="learning">课程笔记</option>
+                  <option value="interview">访谈纪要</option>
+                  <option value="meeting">会议知识库</option>
+                  <option value="custom">自定义模板</option>
+                </select>
+                <textarea id="knowledge-refs-input" rows="2"></textarea>
+                <span class="tiny-chip neutral" id="knowledge-step-audio">待处理</span>
+                <span class="tiny-chip neutral" id="knowledge-step-asr">待处理</span>
+                <span class="tiny-chip neutral" id="knowledge-step-doc">待处理</span>
+                <span class="tiny-chip neutral" id="knowledge-step-notion">待处理</span>
+                <div id="knowledge-notion-result" class="status-banner neutral">尚未归档到 Notion。</div>
+              </div>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

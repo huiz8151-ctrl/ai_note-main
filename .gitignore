@@ -1,0 +1,38 @@
+.env
+.env.local
+.env.*.local
+!.env.example
+!.env.local.example
+
+# Node/Electron dependencies and logs
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+server-run.out.log
+server-run.err.log
+server-start.log
+
+# Local runtime/cache folders
+.chatbot-python/
+.uv-python/
+.uv-cache/
+.npm-cache/
+.tmp/
+.vendor/
+
+# Python cache/artifacts
+__pycache__/
+*.pyc
+*.pyo
+
+# Privacy-sensitive exports (chat history/transcripts/knowledge)
+exports/chatbot_sessions/
+exports/knowledge/
+
+# Local secrets and temporary files
+*.key
+*.pem
+*.p12
+*.tmp

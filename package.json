@@ -1,0 +1,19 @@
+{
+  "name": "ai-note-client",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Desktop meeting and video note client with live transcription and AI summaries.",
+  "main": "desktop/main.js",
+  "scripts": {
+    "dev": "electron .",
+    "start": "electron .",
+    "start:web": "node server.js",
+    "start:web:3211": "cmd /c \"set PORT=3211 && node server.js\""
+  },
+  "devDependencies": {
+    "electron": "^30.5.1"
+  },
+  "dependencies": {
+    "ffmpeg-static": "^5.3.0"
+  }
+}
