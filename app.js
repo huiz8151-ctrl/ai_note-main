@@ -347,11 +347,16 @@ function createBrowserApi() {
 }
 
 async function requestJson(url, init = {}, options = {}) {
-  const targets = [url];
   const isApiRoute = /^\/api\//.test(url);
   const currentOrigin = window.location.origin;
+  const isFileProtocol = window.location.protocol === "file:";
+  const targets = [];
   let legacyKnowledgeApiDetected = false;
   let firstServiceError = null;
+
+  if (!isApiRoute || !isFileProtocol) {
+    targets.push(url);
+  }
 
   if (isApiRoute) {
     API_FALLBACK_BASES.forEach((baseUrl) => {
@@ -359,6 +364,10 @@ async function requestJson(url, init = {}, options = {}) {
         targets.push(`${baseUrl}${url}`);
       }
     });
+  }
+
+  if (targets.length === 0) {
+    targets.push(url);
   }
 
   let lastError = null;
@@ -436,6 +445,17 @@ async function requestJson(url, init = {}, options = {}) {
 
   if (firstServiceError instanceof Error) {
     throw firstServiceError;
+  }
+
+  if (
+    isApiRoute &&
+    isFileProtocol &&
+    lastError instanceof Error &&
+    /Failed to fetch|NetworkError|Load failed/i.test(lastError.message)
+  ) {
+    throw new Error(
+      "当前页面是直接打开的本地 HTML 文件，无法直接访问 /api 接口。请使用 npm run dev 或 npm run start:web 启动项目后再重试；如果使用 Web 版，请访问 http://127.0.0.1:3210 或 http://127.0.0.1:3211。"
+    );
   }
 
   if (
