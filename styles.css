@@ -981,6 +981,64 @@ input[type="range"]::-webkit-slider-thumb {
   line-height: 1.6;
 }
 
+.chatbot-knowledge-context {
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(218, 226, 240, 0.95);
+  background: rgba(246, 249, 255, 0.92);
+}
+
+.chatbot-knowledge-context p {
+  margin: 0;
+  color: #58647b;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.chatbot-knowledge-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chatbot-knowledge-hit {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(219, 226, 237, 0.94);
+}
+
+.chatbot-knowledge-hit strong {
+  color: #33415b;
+  font-size: 12px;
+}
+
+.chatbot-knowledge-hit span {
+  color: #78839a;
+  font-size: 11px;
+}
+
+.chatbot-knowledge-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #556179;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.chatbot-knowledge-toggle input {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+}
+
 .chatbot-composer {
   display: grid;
   gap: 10px;

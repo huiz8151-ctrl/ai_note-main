@@ -84,6 +84,7 @@ const elements = {
   dashboardChatbotDraft: document.querySelector("#dashboard-chatbot-draft"),
   dashboardChatbotError: document.querySelector("#dashboard-chatbot-error"),
   dashboardChatbotForm: document.querySelector("#dashboard-chatbot-form"),
+  dashboardChatbotKnowledgeToggle: document.querySelector("#dashboard-chatbot-knowledge-toggle"),
   dashboardChatbotMessages: document.querySelector("#dashboard-chatbot-messages"),
   dashboardChatbotNewBtn: document.querySelector("#dashboard-chatbot-new-btn"),
   dashboardChatbotSendBtn: document.querySelector("#dashboard-chatbot-send-btn"),
@@ -570,11 +571,51 @@ function buildDefaultChatbotState() {
     framework: "AgentScope",
     isSending: false,
     isSyncingHealth: false,
+    knowledgeRetrieval: false,
     lastHealthCheckAt: "",
     providerLabel: "",
     selectedSessionId: "",
     serviceStatus: "idle",
     sessions: []
+  };
+}
+
+function normalizeKnowledgeCitationHit(hit) {
+  const text = String(hit?.text || "").trim();
+  if (!text) {
+    return null;
+  }
+
+  return {
+    chunkId: String(hit?.chunkId || "").trim(),
+    docId: String(hit?.docId || "").trim(),
+    end: Number(hit?.end) || 0,
+    language: String(hit?.language || "auto").trim() || "auto",
+    markdownPath: String(hit?.markdownPath || "").trim(),
+    model: String(hit?.model || "").trim(),
+    score: Number(hit?.score) || 0,
+    sourcePath: String(hit?.sourcePath || "").trim(),
+    start: Number(hit?.start) || 0,
+    text,
+    videoName: String(hit?.videoName || "").trim()
+  };
+}
+
+function normalizeChatbotCitations(citations) {
+  const hits = Array.isArray(citations?.hits)
+    ? citations.hits.map(normalizeKnowledgeCitationHit).filter(Boolean)
+    : [];
+  const error = String(citations?.error || "").trim();
+  const requested = Boolean(citations?.requested || hits.length || error);
+
+  if (!requested) {
+    return null;
+  }
+
+  return {
+    error,
+    hits,
+    requested
   };
 }
 
@@ -586,6 +627,7 @@ function normalizeChatbotMessage(message) {
 
   return {
     content,
+    citations: normalizeChatbotCitations(message?.citations),
     createdAt: String(message?.createdAt || new Date().toISOString()),
     id: String(message?.id || crypto.randomUUID()),
     role: message?.role === "assistant" ? "assistant" : "user"
@@ -627,6 +669,7 @@ function loadChatbotState() {
     return {
       ...baseState,
       draft: String(raw?.draft || ""),
+      knowledgeRetrieval: Boolean(raw?.knowledgeRetrieval),
       selectedSessionId,
       sessions
     };
@@ -640,6 +683,7 @@ function saveChatbotState() {
     STORAGE_KEYS.chatbot,
     JSON.stringify({
       draft: state.chatbot.draft,
+      knowledgeRetrieval: state.chatbot.knowledgeRetrieval,
       selectedSessionId: state.chatbot.selectedSessionId,
       sessions: state.chatbot.sessions
     })
@@ -719,6 +763,63 @@ function removeChatbotSessionFromState(sessionId) {
 
 function formatChatbotText(content) {
   return escapeHtml(content).replaceAll("\n", "<br />");
+}
+
+function formatKnowledgeCitationTimestamp(start, end) {
+  const normalize = (value) => {
+    const safe = Math.max(0, Math.floor(Number(value) || 0));
+    const hours = Math.floor(safe / 3600);
+    const minutes = Math.floor((safe % 3600) / 60);
+    const seconds = safe % 60;
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  };
+
+  return `${normalize(start)} → ${normalize(end)}`;
+}
+
+function renderChatbotKnowledgeCitations(message) {
+  if (message.role !== "assistant" || !message.citations?.requested) {
+    return "";
+  }
+
+  if (message.citations.error) {
+    return `
+      <div class="chatbot-knowledge-context">
+        <span class="tiny-chip warning">知识检索失败</span>
+        <p>${escapeHtml(message.citations.error)}</p>
+      </div>
+    `;
+  }
+
+  if (!message.citations.hits.length) {
+    return `
+      <div class="chatbot-knowledge-context">
+        <span class="tiny-chip neutral">知识来源</span>
+        <p>未找到匹配的本地知识片段。</p>
+      </div>
+    `;
+  }
+
+  const items = message.citations.hits
+    .map(
+      (hit) => `
+        <li class="chatbot-knowledge-hit">
+          <strong>${escapeHtml(hit.videoName || hit.docId || "未命名知识")}</strong>
+          <span>${escapeHtml(formatKnowledgeCitationTimestamp(hit.start, hit.end))}</span>
+          <span>${escapeHtml(hit.sourcePath || hit.markdownPath || "未知来源")}</span>
+          <span>相关度 ${escapeHtml(`${Math.round(hit.score * 100)}%`)}</span>
+          <p>${escapeHtml(hit.text)}</p>
+        </li>
+      `
+    )
+    .join("");
+
+  return `
+    <div class="chatbot-knowledge-context">
+      <span class="tiny-chip neutral">知识来源</span>
+      <ul class="chatbot-knowledge-list">${items}</ul>
+    </div>
+  `;
 }
 
 function formatChatbotMoment(isoString) {
@@ -838,6 +939,11 @@ function renderChatbotCard() {
     elements.dashboardChatbotDraft.disabled = state.chatbot.isSending;
   }
 
+  if (elements.dashboardChatbotKnowledgeToggle) {
+    elements.dashboardChatbotKnowledgeToggle.checked = Boolean(state.chatbot.knowledgeRetrieval);
+    elements.dashboardChatbotKnowledgeToggle.disabled = state.chatbot.isSending;
+  }
+
   if (elements.dashboardChatbotSendBtn) {
     elements.dashboardChatbotSendBtn.disabled =
       state.chatbot.isSending || !String(state.chatbot.draft || "").trim();
@@ -905,6 +1011,7 @@ function renderChatbotCard() {
             </time>
           </span>
           <div class="chatbot-bubble">${formatChatbotText(message.content)}</div>
+          ${renderChatbotKnowledgeCitations(message)}
         </article>
       `
     )
@@ -951,6 +1058,8 @@ async function submitChatbotDraft() {
   try {
     const result = await runtimeApi.chatbotSendMessage({
       config: state.config,
+      knowledgeRetrieval: state.chatbot.knowledgeRetrieval,
+      knowledgeTopK: 3,
       message: draft,
       sessionId: session.id
     });
@@ -969,6 +1078,13 @@ async function submitChatbotDraft() {
           content: replyText,
           createdAt: new Date().toISOString(),
           id: crypto.randomUUID(),
+          citations: state.chatbot.knowledgeRetrieval
+            ? {
+                error: String(result?.knowledgeError || "").trim(),
+                hits: Array.isArray(result?.knowledgeUsed) ? result.knowledgeUsed : [],
+                requested: true
+              }
+            : null,
           role: "assistant"
         })
       ],
@@ -5493,6 +5609,14 @@ function bindEvents() {
 
       event.preventDefault();
       void submitChatbotDraft();
+    });
+  }
+
+  if (elements.dashboardChatbotKnowledgeToggle) {
+    elements.dashboardChatbotKnowledgeToggle.addEventListener("change", (event) => {
+      state.chatbot.knowledgeRetrieval = Boolean(event.target.checked);
+      saveChatbotState();
+      renderDashboard();
     });
   }
 

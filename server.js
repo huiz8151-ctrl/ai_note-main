@@ -15,6 +15,10 @@ const {
 const {
   deleteChatbotSession,
   getChatbotHealth,
+  getKnowledgeStatus,
+  indexKnowledgeDocument,
+  rebuildKnowledgeIndex,
+  searchKnowledge,
   sendChatbotMessage
 } = require("./lib/chatbot-service-manager");
 const { createLiveTranscriptionManager } = require("./lib/live-transcription-manager");
@@ -255,6 +259,10 @@ async function handleChatbotMessage(request, response) {
   try {
     const result = await sendChatbotMessage({
       config: body.config || {},
+      docIds: Array.isArray(body.docIds) ? body.docIds : [],
+      knowledgeRetrieval: Boolean(body.knowledgeRetrieval),
+      knowledgeTopK: Number(body.knowledgeTopK) || 3,
+      language: trimString(body.language),
       message: body.message,
       sessionId: body.sessionId
     });
@@ -278,6 +286,77 @@ async function handleChatbotDeleteSession(sessionId, response) {
   } catch (error) {
     sendJson(response, 500, {
       error: error instanceof Error ? error.message : "Failed to delete ChatBot session."
+    });
+  }
+}
+
+async function handleKnowledgeStatus(_request, response) {
+  try {
+    const result = await getKnowledgeStatus();
+    sendJson(response, 200, result);
+  } catch (error) {
+    sendJson(response, 500, {
+      error: error instanceof Error ? error.message : "Knowledge index is unavailable."
+    });
+  }
+}
+
+async function handleKnowledgeSearch(request, response) {
+  const body = parseJson(await readRequestBody(request));
+
+  if (!body) {
+    sendJson(response, 400, { error: "请求体不是有效 JSON。" });
+    return;
+  }
+
+  try {
+    const result = await searchKnowledge({
+      query: trimString(body.query),
+      topK: Number(body.topK) || 5,
+      language: trimString(body.language),
+      docIds: Array.isArray(body.docIds) ? body.docIds : []
+    });
+    sendJson(response, 200, result);
+  } catch (error) {
+    sendJson(response, 500, {
+      error: error instanceof Error ? error.message : "知识检索失败。"
+    });
+  }
+}
+
+async function handleKnowledgeRebuild(_request, response) {
+  try {
+    const result = await rebuildKnowledgeIndex();
+    sendJson(response, 200, result);
+  } catch (error) {
+    sendJson(response, 500, {
+      error: error instanceof Error ? error.message : "知识索引重建失败。"
+    });
+  }
+}
+
+async function handleKnowledgeIndex(request, response) {
+  const body = parseJson(await readRequestBody(request));
+
+  if (!body) {
+    sendJson(response, 400, { error: "请求体不是有效 JSON。" });
+    return;
+  }
+
+  try {
+    const result = await indexKnowledgeDocument({
+      docId: trimString(body.docId),
+      videoName: trimString(body.videoName),
+      sourcePath: trimString(body.sourcePath),
+      language: trimString(body.language),
+      model: trimString(body.model),
+      text: trimString(body.text),
+      segments: Array.isArray(body.segments) ? body.segments : []
+    });
+    sendJson(response, 200, result);
+  } catch (error) {
+    sendJson(response, 500, {
+      error: error instanceof Error ? error.message : "知识索引写入失败。"
     });
   }
 }
@@ -1210,6 +1289,7 @@ async function handleKnowledgeTranscribe(request, response) {
   const inputVideoPath = path.join(tempDir, `${baseName}-${runId}${extension}`);
   const extractedAudioPath = path.join(tempDir, `${baseName}-${runId}.wav`);
   const outputMarkdownPath = path.join(outputDir, `${baseName}-${runId}.md`);
+  let indexedKnowledge = null;
 
   try {
     await fs.mkdir(tempDir, { recursive: true });
@@ -1287,9 +1367,26 @@ async function handleKnowledgeTranscribe(request, response) {
       segments: transcription.segments,
       appendTimeline: Boolean(knowledgeConfig?.appendTimeline)
     });
+    const transcript = buildTranscriptFromSegments(transcription.segments);
 
     await fs.writeFile(outputMarkdownPath, markdown, "utf8");
     throwIfAborted(abortController.signal);
+
+    try {
+      indexedKnowledge = await indexKnowledgeDocument({
+        videoName,
+        markdownFilePath: outputMarkdownPath,
+        sourcePath: outputMarkdownPath,
+        language: transcription.detectedLanguage,
+        model: transcription.model,
+        text: transcript,
+        segments: transcription.segments
+      });
+    } catch (indexError) {
+      warning = warning
+        ? `${warning}；知识索引失败：${trimString(indexError instanceof Error ? indexError.message : indexError)}`
+        : `知识索引失败：${trimString(indexError instanceof Error ? indexError.message : indexError)}`;
+    }
 
     if (transcription.cacheSource && transcription.cacheModel) {
       try {
@@ -1304,14 +1401,13 @@ async function handleKnowledgeTranscribe(request, response) {
       }
     }
 
-    const transcript = buildTranscriptFromSegments(transcription.segments);
-
     sendJson(response, 200, {
       ok: true,
       transcript,
       markdown,
       markdownFilePath: outputMarkdownPath,
       segments: transcription.segments,
+      knowledgeIndex: indexedKnowledge,
       sourceLabel,
       warning,
       document: ""
@@ -1443,6 +1539,26 @@ const server = http.createServer(async (request, response) => {
 
   if (request.method === "POST" && url.pathname === "/api/knowledge/transcribe") {
     await handleKnowledgeTranscribe(request, response);
+    return;
+  }
+
+  if (request.method === "GET" && url.pathname === "/api/knowledge/index/status") {
+    await handleKnowledgeStatus(request, response);
+    return;
+  }
+
+  if (request.method === "POST" && url.pathname === "/api/knowledge/index/build") {
+    await handleKnowledgeRebuild(request, response);
+    return;
+  }
+
+  if (request.method === "POST" && url.pathname === "/api/knowledge/index") {
+    await handleKnowledgeIndex(request, response);
+    return;
+  }
+
+  if (request.method === "POST" && url.pathname === "/api/knowledge/search") {
+    await handleKnowledgeSearch(request, response);
     return;
   }
 
